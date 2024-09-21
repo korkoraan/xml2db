@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<orders>
+    <order>
+        <no>1</no>
+        <reg_date>2012.12.19</reg_date>
+        <sum>234022.25</sum>
+        <user>
+            <fio>Иванов Иван Иванович</fio>
+            <email>abc@email.com</email>
+        </user>
+    </order>
+</orders>
