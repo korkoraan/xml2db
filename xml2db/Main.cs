@@ -7,11 +7,10 @@ return;
 
 async Task Main(string[] args)
 {
-    var xmlPath = args[0];
-
-    C.Log($"XML path: {xmlPath}");
-
-    await using (var db = new ShopContext())
+    var xmlPath = args.Length > 0 ? args[0] : "info.xml";
+    var dbPath = args.Length > 1 ? args[1] : "shop.db";
+    
+    await using (var db = new ShopContext(dbPath))
     {
         db.Database.EnsureCreated();
         var stream = File.OpenRead(xmlPath);
@@ -37,7 +36,7 @@ async Task Main(string[] args)
         };
         try
         {
-            var result = OrdersExporter.ReadOrders(reader);
+            OrdersExporter.ReadOrders(reader);
             transaction.Commit();
         }
         catch (Exception e)

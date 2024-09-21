@@ -11,9 +11,9 @@ public sealed class ShopContext : DbContext
     
     private string _dbPath;
 
-    public ShopContext()
+    public ShopContext(string dbPath)
     {
-        _dbPath = Path.Join("shop.db");
+        _dbPath = dbPath;
     }
     
     // The following configures EF to create a Sqlite database file in the
