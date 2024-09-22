@@ -10,17 +10,20 @@ public class OrdersExporterTests
     {
     }
 
-    [Test]
-    public void CorrectInput()
+    XmlReader CreateXmlReader(string path)
     {
-        const string path = "correctInput.xml";
         var stream = File.OpenRead(path);
         var settings = new XmlReaderSettings
         {
             Async = true
         };
-        using var reader = XmlReader.Create(stream, settings);
-        var result = OrdersExporter.ReadOrders(reader);
+        return XmlReader.Create(stream, settings);
+    }
+    
+    [Test]
+    public void CorrectInput()
+    {
+        var result = OrdersExporter.ReadOrders(CreateXmlReader("correctInput.xml"));
         Assert.That(result != null && result.All(o => o.IsValid()));
     }
 
@@ -28,105 +31,67 @@ public class OrdersExporterTests
     public void OrderIsMissingName()
     {
         var path = "orderInvalid1.xml";
-        var stream = File.OpenRead(path);
-        var settings = new XmlReaderSettings
-        {
-            Async = true
-        };
-        using var reader1 = XmlReader.Create(stream, settings);
-        Assert.That(() => OrdersExporter.ReadOrders(reader1).Any(o => !o.IsValid()));
+        var result = OrdersExporter.ReadOrders(CreateXmlReader(path));
+        Assert.That(() => result != null && result.Any(o => !o.IsValid()));
     }
     
     [Test]
     public void OrderIsMissingRegDate()
     {
         var path = "orderInvalid2.xml";
-        var stream = File.OpenRead(path);
-        var settings = new XmlReaderSettings
-        {
-            Async = true
-        };
-        using var reader1 = XmlReader.Create(stream, settings);
-        Assert.That(() => OrdersExporter.ReadOrders(reader1).Any(o => !o.IsValid()));
+        var result = OrdersExporter.ReadOrders(CreateXmlReader(path));
+        Assert.That(() => result != null && result.Any(o => !o.IsValid()));
     }
     
     [Test]
     public void OrderIsMissingSum()
     {
         var path = "orderInvalid3.xml";
-        var stream = File.OpenRead(path);
-        var settings = new XmlReaderSettings
-        {
-            Async = true
-        };
-        using var reader1 = XmlReader.Create(stream, settings);
-        Assert.That(() => OrdersExporter.ReadOrders(reader1).Any(o => !o.IsValid()));
+        var result = OrdersExporter.ReadOrders(CreateXmlReader(path));
+        Assert.That(() => result != null && result.Any(o => !o.IsValid()));
     }
     
     [Test]
     public void OrderIsMissingProducts()
     {
         var path = "orderInvalid4.xml";
-        var stream = File.OpenRead(path);
-        var settings = new XmlReaderSettings
-        {
-            Async = true
-        };
-        using var reader1 = XmlReader.Create(stream, settings);
-        Assert.That(() => OrdersExporter.ReadOrders(reader1).Any(o => !o.IsValid()));
+        var result = OrdersExporter.ReadOrders(CreateXmlReader(path));
+        Assert.That(() => result != null && result.Any(o => !o.IsValid()));
     }
     
     [Test]
     public void OrderIsMissingUser()
     {
         var path = "orderInvalid5.xml";
-        var stream = File.OpenRead(path);
-        var settings = new XmlReaderSettings
-        {
-            Async = true
-        };
-        using var reader1 = XmlReader.Create(stream, settings);
-        Assert.That(() => OrdersExporter.ReadOrders(reader1).Any(o => !o.IsValid()));
+        var result = OrdersExporter.ReadOrders(CreateXmlReader(path));
+        Assert.That(() => result != null && result.Any(o => !o.IsValid()));
     }
     
     [Test]
     public void ProductIsInvalid()
     {
         var path1 = "productInvalid1.xml";
-        var stream1 = File.OpenRead(path1);
-        var settings = new XmlReaderSettings
-        {
-            Async = true
-        };
-        using var reader1 = XmlReader.Create(stream1, settings);
-        Assert.That(() => OrdersExporter.ReadOrders(reader1).Any(o => !o.IsValid()));
+        var result = OrdersExporter.ReadOrders(CreateXmlReader(path1));
+        Assert.That(() => result != null && result.Any(o => !o.IsValid()));
         
         var path2 = "productInvalid2.xml";
-        var stream2 = File.OpenRead(path2);
-        using var reader2 = XmlReader.Create(stream2, settings);
-        Assert.That(() => OrdersExporter.ReadOrders(reader2).Any(o => !o.IsValid()));
+        result = OrdersExporter.ReadOrders(CreateXmlReader(path2));
+        Assert.That(() => result != null && result.Any(o => !o.IsValid()));
         
         var path3 = "productInvalid3.xml";
-        var stream3 = File.OpenRead(path3);
-        using var reader3 = XmlReader.Create(stream3, settings);
-        Assert.That(() => OrdersExporter.ReadOrders(reader3).Any(o => !o.IsValid()));
+        result = OrdersExporter.ReadOrders(CreateXmlReader(path3));
+        Assert.That(() => result != null && result.Any(o => !o.IsValid()));
     } 
     
     [Test]
     public void UserIsInvalid()
     {
         var path1 = "userInvalid1.xml";
-        var stream1 = File.OpenRead(path1);
-        var settings = new XmlReaderSettings
-        {
-            Async = true
-        };
-        using var reader1 = XmlReader.Create(stream1, settings);
-        Assert.That(() => OrdersExporter.ReadOrders(reader1).Any(o => !o.IsValid()));
+        var result = OrdersExporter.ReadOrders(CreateXmlReader(path1));
+        Assert.That(() => result != null && result.Any(o => !o.IsValid()));
         
         var path2 = "userInvalid2.xml";
-        var stream2 = File.OpenRead(path2);
-        using var reader2 = XmlReader.Create(stream2, settings);
-        Assert.That(() => OrdersExporter.ReadOrders(reader2).Any(o => !o.IsValid()));
+        result = OrdersExporter.ReadOrders(CreateXmlReader(path2));
+        Assert.That(() => result != null && result.Any(o => !o.IsValid()));
     }
 }

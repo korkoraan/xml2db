@@ -9,30 +9,32 @@ async Task Main(string[] args)
 {
     var xmlPath = args.Length > 0 ? args[0] : "info.xml";
     var dbPath = args.Length > 1 ? args[1] : "shop.db";
-    
+
+    var stream = File.OpenRead(xmlPath);
+    var settings = new XmlReaderSettings
+    {
+        Async = true
+    };
+    var reader = XmlReader.Create(stream, settings);
     await using (var db = new ShopContext(dbPath))
     {
         db.Database.EnsureCreated();
-        var stream = File.OpenRead(xmlPath);
-    
-        var settings = new XmlReaderSettings
-        {
-            Async = true
-        };
-
-        using var reader = XmlReader.Create(stream, settings);
         var transaction = db.Database.BeginTransaction();
     
         OrdersExporter.NewOrder += order =>
         {
             if (!order.IsValid())
             {
+#if DEBUG
                 C.Log($"Order is invalid: no {order.No}");
+#endif
                 return;
             }
             db.Orders.Add(order);
             db.SaveChanges();
+#if DEBUG
             C.Log(order);
+#endif
         };
         try
         {
@@ -70,4 +72,3 @@ static class C
         Console.WriteLine(str);
     }
 }
-
