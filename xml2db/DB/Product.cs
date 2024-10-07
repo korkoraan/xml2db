@@ -8,14 +8,23 @@ public class Product
     [Key]
     public Guid ProductId { get; set; }
     
-    [Comment("amount left in store")]
-    public int Quantity { get; set; }
-    
+    private string _name = "";
+
     [MaxLength(100)]
-    public string Name { get; set; }
+    public string Name
+    {
+        get => _name; 
+        set => _name = Util.TrimAll(value);
+    }
 
     public bool IsValid()
     {
         return Name != "";
     }
+
+    public bool IsSameAs(Product product)
+    {
+        return Name.Equals(product.Name);
+    }
+
 }

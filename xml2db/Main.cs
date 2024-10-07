@@ -18,24 +18,13 @@ async Task Main(string[] args)
     var reader = XmlReader.Create(stream, settings);
     await using (var db = new ShopContext(dbPath))
     {
+#if CLEAR_DB
+        db.Database.EnsureDeleted();
+#endif
         db.Database.EnsureCreated();
+        OrdersExporter.OnOrderRead += db.AddOrder;
+
         var transaction = db.Database.BeginTransaction();
-    
-        OrdersExporter.NewOrder += order =>
-        {
-            if (!order.IsValid())
-            {
-#if DEBUG
-                C.Log($"Order is invalid: no {order.No}");
-#endif
-                return;
-            }
-            db.Orders.Add(order);
-            db.SaveChanges();
-#if DEBUG
-            C.Log(order);
-#endif
-        };
         try
         {
             OrdersExporter.ReadOrders(reader);
@@ -49,26 +38,13 @@ async Task Main(string[] args)
     }
 }
 
-static class C
+static class Log
 {
-    public static void Log(object o)
+    // TODO: выяснить: выпиливает ли оптимизатор вызов пустого метода
+    public static void Info(object o)
     {
+#if DEBUG
         Console.WriteLine(o);
-    }
-
-    public static void Log(Order order)
-    {
-        var sumStr = order.Sum.ToString();
-        var sum = sumStr.Insert(sumStr.Length - 2, ".");
-        var str = $"Order #{order.No}: " +
-                  $"\n Client: {order.User.Fio}" +
-                  $"\n Date: {order.RegDate}" +
-                  $"\n Sum: {sum}" +
-                  $"\n Products: \n";
-        foreach (var batch in order.ProductBatches)
-        {
-            str += $"{batch.PricedProduct.Product.Name} X{batch.Quantity} \n";
-        }
-        Console.WriteLine(str);
+#endif
     }
 }

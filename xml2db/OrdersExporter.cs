@@ -34,7 +34,7 @@ namespace xml2db
     {
         public delegate void NewOrderHandler(Order order);
 
-        public static event NewOrderHandler? NewOrder; 
+        public static event NewOrderHandler? OnOrderRead; 
         static int ReadCurrency(XmlReader reader)
         {
             return (int)Math.Truncate(reader.ReadElementContentAsDouble() * 100);            
@@ -80,7 +80,7 @@ namespace xml2db
                             if (order is not null)
                             {
                                 result.Add(order);
-                                NewOrder?.Invoke(order);
+                                OnOrderRead?.Invoke(order);
                             }
                         }
 
@@ -118,13 +118,13 @@ namespace xml2db
                                     order.Sum = ReadCurrency(reader);
                                     break;
                                 case Tags.Product.TAG:
-                                    var (pricedProduct, quantity) = ReadProduct(reader);
-                                    if (pricedProduct is null)
+                                    var (price, quantity) = ReadProduct(reader);
+                                    if (price is null)
                                         throw new InvalidXmlException("Product is corrupted");
                                     var batch = new ProductBatch
                                     {
                                         Order = order,
-                                        PricedProduct = pricedProduct,
+                                        Price = price,
                                         Quantity = quantity
                                     };
 
@@ -152,9 +152,9 @@ namespace xml2db
             return null;
         }
 
-        static (PricedProduct, int) ReadProduct(XmlReader reader)
+        static (Price, int) ReadProduct(XmlReader reader)
         {
-            var pricedProduct = new PricedProduct
+            var price = new Price
             {
                 Product = new Product()
             };
@@ -170,16 +170,16 @@ namespace xml2db
                                 quantity = reader.ReadElementContentAsInt();
                                 break;
                             case Tags.Product.NAME:
-                                pricedProduct.Product.Name = reader.ReadElementContentAsString();
+                                price.Product.Name = Util.TrimAll(reader.ReadElementContentAsString());
                                 break;
                             case Tags.Product.PRICE:
-                                pricedProduct.Price = ReadCurrency(reader);
+                                price.Value = ReadCurrency(reader);
                                 break;
                         }
                         break;
                     case XmlNodeType.EndElement:
                         if (reader.Name == Tags.Product.TAG)
-                            return (pricedProduct, quantity);
+                            return (price, quantity);
                         break;
                 }
             }
@@ -197,10 +197,10 @@ namespace xml2db
                         switch (reader.Name)
                         {
                             case Tags.User.FIO:
-                                result.Fio = reader.ReadElementContentAsString();
+                                result.Fio = Util.TrimAll(reader.ReadElementContentAsString());
                                 break;
                             case Tags.User.EMAIL:
-                                result.Email = reader.ReadElementContentAsString();
+                                result.Email = reader.ReadElementContentAsString().Trim();
                                 break;
                         }
                         break;

@@ -1,15 +1,29 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace xml2db.DB;
 
 public class ProductBatch
 {
-    [Key]
-    public int Id { get; set; }
+    [Key] public int ProductBatchId { get; set; }
 
     public Order Order { get; set; }
 
-    public PricedProduct PricedProduct { get; set; }
+    public Price Price { get; set; }
 
-    public int Quantity;
+    public int Quantity { get; set; }
+
+    [NotMapped]
+    public int Value => Quantity * Price.Value;
+
+    public bool IsValid()
+    {
+        return Quantity > 0 && Price.IsValid();
+    }
+
+    public bool IsSameAs(ProductBatch batch)
+    {
+        return Price.IsSameAs(batch.Price) && Quantity == batch.Quantity;
+    }
+
 }

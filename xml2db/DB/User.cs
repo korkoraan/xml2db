@@ -1,36 +1,40 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic.CompilerServices;
 
 namespace xml2db.DB;
 
+[Index(nameof(Email), IsUnique = true)]
 public class User
 {
     [Key]
     public Guid UserId { get; set; }
-    
-    [MaxLength(100)]
-    public string? Fio { get; set; }
-    
-    [MaxLength(100)]
-    public string? Email { get; set; }
-    
-    private bool IsValidEmail(string email)
-    {
-        var trimmedEmail = email.Trim();
 
-        if (trimmedEmail.EndsWith('.')) {
-            return false;
-        }
-        try {
-            var addr = new System.Net.Mail.MailAddress(email);
-            return addr.Address == trimmedEmail;
-        }
-        catch {
-            return false;
-        }
+    private string _fio = "";
+
+    [MaxLength(100)]
+    public string Fio
+    {
+        get => _fio; 
+        set => _fio = Util.TrimAll(value);
+    }
+
+    private string _email = "";
+
+    [MaxLength(100)]
+    public string Email
+    {
+        get => _email;
+        set => _email = Util.ParseEmail(value) ?? "";
     }
 
     public bool IsValid()
     {
-        return Fio != "" && Email is not null && IsValidEmail(Email);
+        return Fio != "" && Util.IsValidEmail(Email);
+    }
+
+    public bool IsSameAs(User user)
+    {
+        return Fio.Equals(user.Fio) && Email.Equals(user.Email);
     }
 }
